@@ -1,0 +1,701 @@
+#include<iostream>
+#include<string>
+#include<stdlib.h>
+#include<fstream>
+using namespace std;
+class book {
+public:
+	string name;
+	int id;
+	int num;
+	int borid = 0;
+
+
+	book() {
+		name = "";
+		id = 0;
+		num = 0;
+		borid = 0;
+	}
+
+	book(string &t, int i, int n) {
+		name = t;
+		id = i;
+		num = n;
+	}
+
+	book(const book &t) {
+		name = t.name;
+		id = t.id;
+	}
+
+	//判断书籍是否被全部借出
+	bool is_lend() {
+		if (num)
+			return false;
+		else
+			return true;
+	}
+};
+
+class reader {
+public:
+	string name;
+	int studentid;
+	int borrownum = 0;
+	string borrowname;
+	int  borrowid = 0;
+	string password = "000000";
+
+
+	reader() {
+		name = "";
+		studentid = 0;
+	}
+	reader(string &t, int d) {
+		name = t;
+		studentid = d;
+	}
+	reader(reader &t) {
+		name = t.name;
+		studentid = t.studentid;
+
+	}
+	void Setpassword(string &o, string &t) {
+		if (o != password) {
+			cout << "原密码输入错误!\n";
+			system("pause");
+		}
+		else {
+			if (t.size() >= 6 && t.size() <= 12)
+			{
+				password = t;
+				cout << "修改成功！\n";
+				system("pause");
+			}
+			else {
+				cout << "密码不符合要求!";
+				system("pause");
+			}
+		}
+	}
+
+};
+
+class library {
+public:
+	book open[20];
+	reader open2[20];
+	int i, j;
+	int judge;
+	int b = 0;//表示图书馆中所含书籍的种类
+	int r = 0;//表示图书馆中的已申请读者数量
+
+	void SetBook(string &t, int d, int n) {                       //修改书籍的剩余量，也可以添加新书籍
+		for (i = 0; i < 20 && open[i].id != d; i++) {
+		}
+		if (open[i].id == d)
+		{
+			open[i].num = n;
+			cout << "修改成功！\n";
+			system("pause");
+		}
+		else {
+			cout << "输入信息有误，更改失败！请核对信息\n";
+			system("pause");
+		}
+
+	}
+
+	void addbook(string &t, int d, int n) {                           //直接添加新书籍
+		for (i = 0; i < 20 && open[i].id != d; i++) {
+		}
+		if (open[i].id != d)
+		{
+			book A(t, d, n);
+			open[b] = A;
+			b++;
+			cout << "录入成功！\n";
+		}
+		else {
+			cout << "该书已存在，已将新补录的书籍记录\n";
+			open[i].num += n;
+
+		}
+
+	}
+
+	void delbook(string &t, int d) {                              //删除一类书籍
+		for (i = 0; i < 20 && open[i].id != d; i++) {
+		}
+		if (open[i].id != d || open[i].name != t) {
+			cout << "无法找到输入的书籍或输入的书名与编号不匹配，请核对信息\n";
+			system("pause");
+		}
+		else
+		{
+			for (; i < b; i++)
+				open[i] = open[i + 1];
+
+
+			open[b].name = "";
+			open[b].id = 0;
+			open[b].num = 0;
+			open[b].borid = 0;
+			b--;
+			cout << "成功删除书籍信息!\n";
+			system("pause");
+		}
+	}
+
+	void addreader(string &t, int d) {
+
+		for (i = 0; i < 20 && open2[i].studentid != d; i++) {
+		}
+		if (open2[i].studentid != d)
+		{
+			open2[r].name = t;
+			open2[r].studentid = d;
+			r++;
+			cout << "成功建立用户！\n";
+			system("pause");
+		}
+		else {
+			cout << "该用户以存在\n";
+			system("pause");
+		}
+	}
+
+	void SetReader(string &t, int d, string &tt, int dd) {
+		for (i = 0; i < 20 && open2[i].studentid != d; i++) {
+		}
+		if (open2[i].studentid == d)
+		{
+			open2[i].name = tt;
+			open2[i].studentid = dd;
+			cout << "Set succeed\n";
+			system("pause");
+		}
+		else {
+			cout << "找不到该学生，修改信息失败！\n";
+			system("pause");
+		}
+
+
+	}
+
+
+	void delreader(string &t, int d) {
+		for (i = 0; i < 20 && open2[i].studentid != d; i++) {}
+		if (open[i].id != d || open2[i].name != t) {
+			for (; i < r; i++) {
+				open2[i] = open2[i + 1];
+				open2[r].name = "";
+				open2[r].studentid = 0;
+				r--;
+			}
+			cout << "删除成功！\n";
+		}
+
+		else {
+			cout << "录入信息有误，注销用户失败，请核对信息\n";
+		}
+
+	}
+	
+	
+	void researchbook(int d) {
+		for (i = 0; i < 20 && open[i].id != d; i++) {
+		}
+		if (open[i].id != d)
+			cout << "此编号无对应书目!\n";
+		else {
+			cout << "书名：" << open[i].name << endl
+				<< "图书编号：" << open[i].id << endl
+				<< "本书剩余量：" << open[i].num << endl;
+		}
+	}
+
+	void researchreader(int sd) {
+		for (i = 0; i < 20 && open2[i].studentid != sd; i++) {
+		}
+		if (open2[i].studentid != sd)
+			cout << "此学号无对应读者!\n";
+		else {
+			cout << "读者姓名：" << open2[i].name << endl;
+			cout << "学号：" << open2[i].studentid << endl;
+		}
+	}
+
+	void researchreder(int sd) {
+		for (j = 0; j < 20 && open2[j].studentid != sd; j++) {	
+		}
+		cout << "姓名：" << open2[j].name << endl;
+		cout << "学号：" << open2[j].studentid << endl;
+		cout << "借阅书目：" << open2[j].borrowname << endl;
+	}
+
+	void borrow(int d, int sd) {
+		for (i = 0; i < 20 && open[i].id != d; i++) {
+		}
+		if (open[i].id != d)
+			cout << "抱歉，您要借阅的书不存在\n";
+		else {
+			if (open[i].is_lend())
+				cout << "抱歉，本书已经全部被借出" << endl;
+			else {
+				for (j = 0; i < 20 && open2[j].studentid != sd; j++) {}
+
+				cout << "借书成功" << endl;
+				cout << "书籍名称：" << open[i].name << "\n书籍编号：" << open[i].id << endl;
+				open[i].num--;
+				open[i].borid = 100000 + open2[j].studentid;
+				open2[j].borrowname = open[i].name;
+				open2[j].borrowid = open[i].borid;
+				open2[j].borrownum++;
+			}
+		}
+
+
+	}
+	void retbook(int &t) {
+
+
+		for (i = 0; i < 20 && open[i].borid != t; i++) {
+		
+		}
+		for (j = 0; i < 20 && open2[j].borrowid != t; j++) {
+		
+		}
+
+
+		if (t == open2[j].borrowid) {
+			open[i].num++;
+			open[i].borid = 0;
+			open2[j].borrowid = 0;
+			open2[j].borrowname = " ";
+			open2[j].borrownum--;
+			cout << "还书成功\n";
+		}
+		else
+		{
+			cout << "还书失败！归还书本与您的借阅信息不符，请核对信息\n";
+		}
+	}
+
+
+};
+string admpassword = "000000";
+void admpass(string &t, string &p) {
+	if (t != admpassword)
+	{
+		cout << "验证失败" << endl;
+		system("pause");
+	}
+	else {
+		admpassword = p;
+		cout << "修改成功！\n";
+	}
+
+
+}
+
+
+
+
+int main() {
+	int i;
+	string bookname;
+	string readername;
+	int stuid;
+	string stupass;
+	string readerbor;
+	int readerborid = 0;
+	string stupassword;
+	string stupassword2;
+	int bookid;
+	int booknum;
+	library A;
+	int a = 1;
+
+
+
+	fstream infile("D:\\c++\\adm.txt", ios::out || ios::in);
+	if (!infile) {
+		cout << "文件adm打开失败\n";
+		exit(0);
+	}
+	string fpassword;
+	infile >> fpassword;
+	infile.close();
+	if (fpassword != "")
+		admpassword = fpassword;
+
+	fstream innumfile("D:\\c++\\num.txt", ios::out || ios::in);
+	if (!innumfile) {
+		cout << "文件num打开失败\n";
+		exit(0);
+	}
+	innumfile >> A.b;
+	innumfile >> A.r;
+	innumfile.close();
+
+	fstream inbookfile("D:\\c++\\book.txt", ios::out || ios::in);
+	if (!inbookfile) {
+		cout << "文件book打开失败\n";
+		exit(0);
+	}
+	for (i = 0; i < A.b; i++) {
+		inbookfile >> bookname;
+		inbookfile >> bookid;
+		inbookfile >> booknum;
+		A.open[i].name = bookname;
+		A.open[i].id = bookid;
+		A.open[i].num = booknum;
+	}
+	inbookfile.close();
+
+
+	fstream inreaderfile("D:\\c++\\reader.txt", ios::out || ios::in);
+	if (!inreaderfile) {
+		cout << "文件reader打开失败\n";
+		exit(0);
+	}
+
+	for (i = 0; i <A.r; i++) {
+		inreaderfile >> readername;
+		inreaderfile >> stuid;
+		inreaderfile >> stupass;
+		inreaderfile >> readerbor;
+		inreaderfile >> readerborid;
+		A.open2[i].name = readername;
+		A.open2[i].studentid = stuid;
+		A.open2[i].borrowname = readerbor;
+		A.open2[i].password = stupass;
+		A.open2[i].borrowid = readerborid;
+	}
+	inreaderfile.close();
+
+	while (a != 3) {
+		system("cls");
+		cout << "**********************************************" << endl;
+		cout << "              欢迎使用图书管理系统                    " << endl;
+		cout << "                 1   管理员模式                       " << endl;
+		cout << "                 2   读者模式                         " << endl;
+		cout << "                 3   退出                             " << endl;
+		cout << "**********************************************" << endl;
+		cout << "请输入选项：";
+		cin >> a;
+		if (a == 1) {
+			int b = 0;
+			string pass;
+			system("cls");
+
+			int cnt = 0;
+			bool correct = false;
+			while (cnt < 3 && correct == false) {
+				cout << "管理员模式\n";
+				cout << "首次登录请使用默认密码登录，登陆后请修改密码\n默认密码为000000\n";
+				cout << "你已经尝试" <<cnt<<"次"<< endl;
+				cout << "请输入管理员密码：";
+				cin >> pass;
+				system("cls");
+				if (pass != admpassword) {
+					cnt++;
+					cout << "密码错误！\n";
+					system("pause");
+					system("cls");
+					b = 0;
+				}
+				else {
+					correct = true;
+					cout << "欢迎登录!\n";
+					system("pause");
+					b = 10;
+				}
+			
+
+
+			}
+			while (b)
+			{
+				system("cls");
+				cout << "**********************************************" << endl;
+				cout << "                                                      " << endl;
+				cout << "                 1   添加图书库存信息                 " << endl;
+				cout << "                 2   修改图书信息                     " << endl;
+				cout << "                 3   删除图书信息                     " << endl;
+				cout << "                 4   创建读者信息                     " << endl;
+				cout << "                 5   查阅读者信息                     " << endl;
+				cout << "                 6   删除读者信息                     " << endl;
+				cout << "                 7   修改读者信息                     " << endl;
+				cout << "                 8   修改管理员密码                   " << endl;
+				cout << "                 9   查阅图书信息                     " << endl;
+				cout << "                 0   返回上一层目录                   " << endl;
+				cout << "                                                      " << endl;
+				cout << "**********************************************" << endl;
+				cout << "请输入选项：";
+				cin >> b;
+				system("cls");
+				if (b == 1) {
+					cout << "请输入你要录入的书籍的种类：";
+					int n;
+					cin >> n;
+
+					for (i = 0; i < n; i++) {
+						cout << "请依次录入书籍名 书籍编号 录入数量\n";
+						cin >> bookname >> bookid >> booknum;
+						A.addbook(bookname, bookid, booknum);
+					}
+					system("cls");
+					cout << "已完成录入\n";
+					cout << "返回上一菜单\n";
+				}
+
+				if (b == 2) {
+					cout << "修改图书信息\n";
+					cout << "请依次输入要修改的书籍名，书籍编号，要修改的数量：\n";
+					cin >> bookname >> bookid >> booknum;
+					A.SetBook(bookname, bookid, booknum);
+					cout << "返回主菜单\n";
+				}
+
+				if (b == 3) {
+					cout << "删除图书信息\n";
+					cout << "请输入要删除的书籍名，书籍编号\n";
+					cin >> bookname >> bookid;
+					system("cls");
+					A.delbook(bookname, bookid);
+					cout << "返回上一菜单\n";
+
+				}
+
+				if (b == 4) {
+					cout << "创建读者信息\n";
+					cout << "请输入读者的姓名：";
+					cin >> readername;
+					cout << "请输入读者的学号：";
+					cin>> stuid;
+					system("cls");
+					A.addreader(readername, stuid);
+					
+				}
+
+				if (b == 5) {
+					for (i = 0; i < A.r; i++) {
+						A.researchreader(A.open2[i].studentid);
+					}
+					system("pause");
+				}
+
+				if (b == 6) {
+					cout << "删除读者信息\n";
+					cout << "输入待删除读者的姓名：\n";
+					cin >> readername;
+					cout << "输入待删除读者的学号：\n";
+					cin >> stuid;
+					system("cls");
+					A.delreader(readername, stuid);
+					system("pause");
+				}
+
+				if (b == 7) {
+					string readername2;
+					int stuid2;
+					cout << "修改读者信息\n";
+					cout << "请输入需要修改的用户姓名：";
+					cin >> readername;
+					cout << "请输入需要修改的用户学号：";
+					cin >> stuid;
+					cout << "请输入修改后的用户姓名：";
+					cin >> readername2;
+					cout << "请输入修改后的用户学号：";
+					cin >> stuid2;
+					system("cls");
+					A.SetReader(readername, stuid, readername2, stuid2);
+				}
+
+				if (b == 8) {
+					string admpassword1;
+					string admpassword2;
+					cout << "修改管理员密码\n";
+					cout << "请输入先前的密码：\n";
+					cin >> admpassword1;
+					cout << "请输入修改后的密码：\n";
+					cin >> admpassword2;
+					system("cls");
+					fstream file("D:\\c++\\adm.txt", ios::out);
+					if (!file) {
+						cout << "文件打开失败\n";
+						exit(0);
+					}
+					file << admpassword2;
+
+					file.close();
+					admpass(admpassword1, admpassword2);
+					system("pause");
+				}
+
+				if (b == 9) {
+					for (i = 0; i < A.b; i++) {
+						A.researchbook(A.open[i].id);
+					}
+					system("pause");
+
+
+				}
+			}
+		}
+
+		if (a == 2) {
+			system("cls");
+			int r = 0;
+			int cnt = 0;
+			bool correct = false;
+			while (cnt < 3 && correct == false) {
+				cout << "已进入读者模式\n";
+				cout << "首次登陆请使用默认密码000000\n如果未申请账户，请联系管理员来建立您的账户\n";
+				cout << endl;
+				cout << "你已经尝试" << cnt << "次" << endl;
+				cout << "请输入您的账户：\n";
+				cin >> stuid;
+				for (i = 0; i < 20 && A.open2[i].studentid != stuid; i++) {}
+				if (A.open2[i].studentid != stuid){
+					cout << "用户不存在，请查证用户信息或申请新用户\n";
+					system("pause");
+					system("cls");
+				}
+				else {
+					cout << "请输入密码：\n";
+					cin >> stupassword;
+					if (stupassword == A.open2[i].password)
+					{
+						correct = true;
+						cout << "登陆成功！\n";
+						r = 1;
+					}
+					else {
+						cnt++;
+						cout << "密码错误！\n";
+						r = 0;
+						system("pause");
+						system("cls");
+					}
+				}
+			}
+
+
+
+
+			while (r) {
+				system("cls");
+				cout << "欢迎读者" << A.open2[i].name << endl
+					<< "学号：" << A.open2[i].studentid << endl
+					<< "借阅图书：" << A.open2[i].borrowname << endl
+					<< "借阅id：" << A.open2[i].borrowid << endl;
+
+
+				cout << "**********************************************" << endl;
+				cout << "                                              " << endl;
+				cout << "                 1   借阅图书                 " << endl;
+				cout << "                 2   归还图书                 " << endl;
+				cout << "                 3   查询图书                 " << endl;
+				cout << "                 4   修改密码                 " << endl;
+				cout << "                 0   返回上一层目录           " << endl;
+				cout << "                                              " << endl;
+				cout << "**********************************************" << endl;
+				cout << "请输入选项：";
+				cin >> r;
+				if (r == 1) {
+					system("cls");
+					cout << "借阅图书\n";
+					cout << "请输入要借阅的图书编号：";
+					cin >> bookid;
+					A.borrow(bookid, A.open2[i].studentid);
+					system("pause");
+				}
+
+				if (r == 2) {
+					system("cls");
+					cout << "归还图书\n";
+					cout << "请输入要归还图书的借阅id：";
+					cin >> bookid;
+					A.retbook(bookid);
+					system("pause");
+				}
+				if (r == 3) {
+					system("cls");
+					cout << "查询图书\n";
+					cout << "请输入要查询的图书编号\n";
+					cin >> bookid;
+					A.researchbook(bookid);
+					system("pause");
+
+				}
+				if (r == 4) {
+					system("cls");
+					cout << "修改密码\n";
+					cout << "请输入原密码:";
+					cin >> stupassword;
+					cout << "请输入修改后密码:";
+					cin >> stupassword2;
+					A.open2[i].Setpassword(stupassword, stupassword2);
+				}
+			}
+		}
+
+
+	}
+
+	fstream offbookfile("D:\\c++\\book.txt", ios::out);
+	if (!offbookfile) {
+		cout << "文件book打开失败\n";
+		exit(0);
+	}
+	for (i = 0; i <A.b; i++) {
+		offbookfile << A.open[i].name;
+		offbookfile << " ";
+		offbookfile << A.open[i].id;
+		offbookfile << " ";
+		offbookfile << A.open[i].num;
+		offbookfile << " ";
+
+	}
+	inbookfile.close();
+
+	fstream rreaderfile("D:\\c++\\reader.txt", ios::trunc);
+	rreaderfile.close();
+	fstream offreaderfile("D:\\c++\\reader.txt", ios::out);
+	if (!offreaderfile) {
+		cout << "文件reader打开失败\n";
+		system("pause");
+		exit(0);
+	}
+	for (i = 0; i < A.r; i++) {
+		offreaderfile << A.open2[i].name;
+		offreaderfile << " ";
+		offreaderfile << A.open2[i].studentid;
+		offreaderfile << " ";
+		offreaderfile << A.open2[i].password;
+		offreaderfile << " ";
+		offreaderfile << A.open2[i].borrowname;
+		offreaderfile << " ";
+		offreaderfile << A.open2[i].borrowid;
+		offreaderfile << " ";
+
+	}
+	offreaderfile.close();
+
+	ofstream offnumfile("D:\\c++\\num.txt", ios::out);
+	if (!offnumfile) {
+		cout << "文件num打开失败\n";
+		system("pause");
+		exit(0);
+	}
+	offnumfile << A.b;
+	offnumfile << " ";
+	offnumfile << A.r;
+	offnumfile.close();
+
+	return 0;
+}
